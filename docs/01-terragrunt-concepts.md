@@ -25,7 +25,7 @@ This project uses a **Split-Repo** architecture pattern (Monorepo with logical s
 
 
 * **`modules/` (The Blueprints):** Pure Terraform code (`.tf`). These are reusable templates that take inputs and create resources. They know *how* to build something, but not *what* specifically to build.
-* **`live/` (The Implementation):** Terragrunt code (`.hcl`). These files define the specific environment (Dev/Prod), region (us-east-1), and variable values.
+* **`live/` (The Implementation):** Terragrunt code (`.hcl`). These files define the specific environment (Dev/Prod), region (us-east-1/us-east-2), and variable values.
 
 ---
 
