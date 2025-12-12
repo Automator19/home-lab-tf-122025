@@ -1,0 +1,18 @@
+Why terragrunt use dynamoDB for backend ?
+- DynamoDB is used for state locking. It prevents two people (or ci jobs) from changing the same Terraform state at a time. 
+- Quick Break down 
+    - S3 --> Stores Terraform State file
+    - DynamoDB --> Stores a tiny lock record to make sure only one apply/plan runs at once.
+    - terragrunt --> Automatically creates/uses the the DynamoDB table so state locking is safe.
+
+What are the helper files ? 
+- Locations
+    - live/dev/env.hcl
+    - live/prod/env.hcl
+    - live/dev/us-east-1/region.hcl
+    - live/prod/us-east-2/region.hcl
+
+This file tells terragrunt "Where am I?" So it can fill in the variables in the /live/terragrunt.hcl code. 
+
+
+    

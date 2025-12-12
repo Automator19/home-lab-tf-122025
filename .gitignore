@@ -1,0 +1,61 @@
+# ----------------------------------------------------------------------
+# Terraform & Terragrunt
+# ----------------------------------------------------------------------
+# Local .terraform directories (plugins and backend config)
+**/.terraform/
+
+# Terragrunt cache (Crucial to ignore)
+**/.terragrunt-cache/
+
+# State files (We use S3, but ignore local ones just in case)
+*.tfstate
+*.tfstate.backup
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Plan files (Contains sensitive info)
+*.tfplan
+
+# Lock files (Optional: Commit this if working in a team, ignore for solo lab if it gets annoying)
+.terraform.lock.hcl
+
+# ----------------------------------------------------------------------
+# AWS & Secrets (SAFETY FIRST)
+# ----------------------------------------------------------------------
+# SSH Keys (The keypair you downloaded)
+*.pem
+
+# AWS CLI credentials (if you accidentally save them locally)
+.aws/
+creds
+credentials
+
+# Environment variable files
+.env
+.env.*
+
+# ----------------------------------------------------------------------
+# Lambda & Python
+# ----------------------------------------------------------------------
+# Generated Zip files for Lambda deployment
+*.zip
+
+# Python Bytecode
+__pycache__/
+*.pyc
+
+# ----------------------------------------------------------------------
+# OS & Editor Clutter
+# ----------------------------------------------------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Mac
+.DS_Store
+
+# VS Code
+.vscode/
