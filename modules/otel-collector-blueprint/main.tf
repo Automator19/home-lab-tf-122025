@@ -1,4 +1,15 @@
-# 1. SSM Parameter (Stores the Config)
+# 1. Create the ECS Cluster
+resource "aws_ecs_cluster" "this" {
+  name = "${var.cluster_name}-${var.env}"
+  
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+}
+
+
+# 2. SSM Parameter (Stores the Config)
 resource "aws_ssm_parameter" "config" {
   name      = "/${var.env}/otel/config"
   type      = "String"
@@ -6,7 +17,7 @@ resource "aws_ssm_parameter" "config" {
   overwrite = true
 }
 
-# 2. Execution Role (Calls your IAM Module)
+# 3. Execution Role (Calls your IAM Module)
 module "execution_role" {
   source      = "../iam-role"
   name        = "otel-exec-${var.env}"
@@ -25,14 +36,31 @@ resource "aws_iam_role_policy" "ssm_access" {
   })
 }
 
-# 3. Task Role (Calls your IAM Module)
+# NEW: Allow ECS to create its own Log Groups
+resource "aws_iam_role_policy" "logs_create" {
+  name = "allow-create-log-group"
+  role = module.execution_role.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "logs:CreateLogGroup"
+        Resource = "*" 
+      }
+    ]
+  })
+}
+
+# 4. Task Role (Calls your IAM Module)
 module "task_role" {
   source      = "../iam-role"
   name        = "otel-task-${var.env}"
   policy_arns = ["arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"]
 }
 
-# 4. Security Group (Calls your SG Module)
+# 5. Security Group (Calls your SG Module)
 module "sg" {
   source        = "../security-group"
   name          = "otel-sg-${var.env}"
@@ -40,11 +68,11 @@ module "sg" {
   ingress_ports = [4317, 4318]
 }
 
-# 5. ECS Service (Calls your ECS Module)
+# 6. ECS Service (Calls your ECS Module)
 module "ecs" {
   source             = "../ecs-fargate"
   service_name       = "otel-collector-${var.env}"
-  cluster_id         = var.cluster_id
+  cluster_id         = aws_ecs_cluster.this.id
   subnets            = var.subnets
   security_groups    = [module.sg.id]
   execution_role_arn = module.execution_role.arn
